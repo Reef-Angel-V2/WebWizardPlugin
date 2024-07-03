@@ -232,7 +232,7 @@ func (t *Tools) installDrivers(location string) error {
 	}
 	if _, err := os.Stat(filepath.Join(location, "post_install"+extension)); err == nil {
 		t.logger("Installing drivers")
-		ok := MessageBox("Installing drivers", "We are about to install some drivers needed to use Arduino/Genuino boards\nDo you want to continue?")
+		ok := MessageBox("Installing drivers", "We are about to install some drivers needed to use for the Reef Angel Boards\nDo you want to continue?")
 		if ok == OkPressed {
 			os.Chdir(location)
 			t.logger(preamble + "post_install" + extension)
