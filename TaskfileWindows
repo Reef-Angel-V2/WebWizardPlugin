@@ -1,0 +1,51 @@
+version: "3"
+
+tasks:
+  go:build:
+    desc: Build the project
+    dir: "{{.DEFAULT_GO_MODULE_PATH}}"
+    cmds:
+      - go build -v -mod=vendor -o {{.PROJECT_NAME}} {{.LDFLAGS}}
+
+  go:delete-syso-win:
+    desc: Delete .syso files on Windows
+    cmds:
+      - cmd /c del /F /Q *.syso
+
+  go:delete-syso-unix:
+    desc: Delete .syso files on Unix-like systems
+    cmds:
+      - rm -f *.syso
+
+  go:build-win:
+    desc: Build the project for Windows
+    cmds:
+      - rsrc -arch {{.GOARCH}} -manifest manifest.xml
+      - task: go:build
+        vars:
+          PROJECT_NAME: Reef-Angel-Webwizard-Plugin.exe
+          WIN_FLAGS: -H=windowsgui
+      - |
+        if [ "{{OS}}" = "windows" ]; then
+          task go:delete-syso-win
+        else
+          task go:delete-syso-unix
+        fi
+    vars:
+      GOARCH:
+        sh: go env GOARCH
+
+vars:
+  PROJECT_NAME: Reef-Angel-Webwizard-Plugin
+  CONFIGURATION_PACKAGE: main
+  VERSION: "2.0.7"
+  COMMIT: "RA"
+  LDFLAGS: 
+      "-ldflags=\"-H=windowsgui -s -w 
+      -X {{.CONFIGURATION_PACKAGE}}.version={{.VERSION}} 
+      -X {{.CONFIGURATION_PACKAGE}}.commit={{.COMMIT}}\""
+  DEFAULT_GO_MODULE_PATH: ./
+  DEFAULT_GO_PACKAGES:
+    sh: |
+      echo $(cd {{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}} && go list ./... | findstr /v /i "arduino-create-agent/gen/ arduino-create-agent/design" || echo "ERROR: Unable to discover Go packages")
+
