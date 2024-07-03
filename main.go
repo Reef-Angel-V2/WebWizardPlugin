@@ -178,7 +178,7 @@ func loop() {
 	// If we are updating manually from 1.2.7 to 1.3.0 we have to uninstall the old agent manually first.
 	// This check will inform the user if he needs to run the uninstall first
 	if runtime.GOOS == "darwin" && oldInstallExists() {
-		utilities.UserPrompt("Old agent installation of the Arduino Create Agent found, please uninstall it before launching the new one", "\"OK\"", "OK", "OK", "Error")
+		utilities.UserPrompt("Old agent installation of the Reef Angel Webwizard plugin found, please uninstall it before launching the new one", "\"OK\"", "OK", "OK", "Error")
 		os.Exit(0)
 	}
 
@@ -378,7 +378,7 @@ func loop() {
 			if expired, err := cert.IsExpired(); err != nil {
 				log.Errorf("cannot check if certificates are expired something went wrong: %s", err)
 			} else if expired {
-				buttonPressed := utilities.UserPrompt("The Arduino Agent needs a local HTTPS certificate to work correctly with Safari.\nYour certificate is expired or close to expiration. Do you want to update it?", "{\"Do not update\", \"Update the certificate for Safari\"}", "Update the certificate for Safari", "Update the certificate for Safari", "Arduino Agent: Update certificate")
+				buttonPressed := utilities.UserPrompt("The Reef Angel Webwizard plugin needs a local HTTPS certificate to work correctly with Safari.\nYour certificate is expired or close to expiration. Do you want to update it?", "{\"Do not update\", \"Update the certificate for Safari\"}", "Update the certificate for Safari", "Update the certificate for Safari", "Reef Angel Webwizard Plugin: Update certificate")
 				if buttonPressed {
 					err := cert.UninstallCertificates()
 					if err != nil {
@@ -418,11 +418,8 @@ func loop() {
 	socketHandler := wsHandler().ServeHTTP
 
 	extraOrigins := []string{
-		"https://create.arduino.cc",
-		"https://cloud.arduino.cc",
-		"https://app.arduino.cc",
-		"https://board-registration.arduino.cc",
-		"https://*.app.arduino.cc",
+		"https://forum.reefangel.com",
+		"https://reefangel.com",
 	}
 
 	for i := 8990; i < 9001; i++ {
@@ -511,14 +508,14 @@ func loop() {
 
 // oldInstallExists will return true if an old installation of the agent exists (on macos) and is not the process running
 func oldInstallExists() bool {
-	oldAgentPath := config.GetDefaultHomeDir().Join("Applications", "ArduinoCreateAgent")
+	oldAgentPath := config.GetDefaultHomeDir().Join("Applications", "ReefAngelWebWizardPlugin")
 	currentBinary, _ := os.Executable()
 	// if the current running binary is the old one we don't need to do anything
 	binIsOld, _ := paths.New(currentBinary).IsInsideDir(oldAgentPath)
 	if binIsOld {
 		return false
 	}
-	return oldAgentPath.Join("ArduinoCreateAgent.app").Exist()
+	return oldAgentPath.Join("ReefAngelWebWizardPlugin.app").Exist()
 }
 
 func parseIni(filename string) (args []string, err error) {
@@ -555,5 +552,5 @@ func installCertsKeyExists(filename string) (bool, error) {
 }
 
 func promptInstallCertsSafari() bool {
-	return utilities.UserPrompt("The Arduino Agent needs a local HTTPS certificate to work correctly with Safari.\nIf you use Safari, you need to install it.", "{\"Do not install\", \"Install the certificate for Safari\"}", "Install the certificate for Safari", "Install the certificate for Safari", "Arduino Agent: Install certificate")
+	return utilities.UserPrompt("The Reef Angel Wizard Plugin needs a local HTTPS certificate to work correctly with Safari.\nIf you use Safari, you need to install it.", "{\"Do not install\", \"Install the certificate for Safari\"}", "Install the certificate for Safari", "Install the certificate for Safari", "Reef Angel Webwizard Plugin: Install certificate")
 }
